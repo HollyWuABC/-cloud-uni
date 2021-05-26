@@ -36,10 +36,10 @@
 </template>
 
 <script>
-	import MescrollMixin from "@/uni_modules/mescroll-uni/components/mescroll-uni/mescroll-mixins.js";
+	// import MescrollMixin from "@/uni_modules/mescroll-uni/components/mescroll-uni/mescroll-mixins.js";
 	import MescrollUni from "../../components/mescroll-uni/mescroll-uni.vue";
 	export default {
-		mixins: [MescrollMixin],
+		// mixins: [MescrollMixin],
 		components:{
 			MescrollUni
 		},
@@ -94,7 +94,7 @@
 						pageSize
 					},
 					success: res => {
-						console.log('视频video', res);
+						// console.log('视频video', res);
 						this.relatedVideo = res.data.data;
 					},
 					complete: () => {
@@ -109,18 +109,11 @@
 			},
 			// 上拉刷新的回调 mescroll携带page参数，其中num：当前页从1开始， size：每页数据条数，默认10
 			upCallback(mescroll) {
-				console.log('mescroll', mescroll);
-				console.log('124', mescroll.num, mescroll.size);
+				// console.log('mescroll', mescroll);
+				// console.log('124', mescroll.num, mescroll.size);
 				//联网加载数据
-				this.getList(mescroll.num, mescroll.size, (res) => {
-					//设置列表数据
-					if (mescroll.num == 1) this.relatedVideo = []; //如果是第一页需手动置空列表
-					this.relatedVideo = this.relatedVideo.concat(res);
-					mescroll.endSuccess();
-				}, () => {
-					//联网失败的回调,隐藏下拉刷新的状态
-					mescroll.endErr();
-				});
+				this.getList(mescroll.num, mescroll.size);
+				mescroll.endSuccess();
 			}
 		}
 	}

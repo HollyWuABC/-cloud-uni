@@ -1,11 +1,24 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path":"pages/account/ad",
+			"style":{
+				"navigationBarTitleText":"广告页",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "发现", // 首页
 				"app-plus":{
-					"titleNView":false // 去掉页面的导航栏
+					"titleNView":false ,// 去掉页面的导航栏
+					"softinputNavBar": "none" ,// 不想显示软键盘上方的横条
+					"bounce": "none", // 取消iOS回弹,避免和下拉刷新冲突
+					"disableScroll": true // Android小程序卡顿
 				}
 			}
 		}
@@ -30,6 +43,7 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "我的",
+				"navigationStyle":"custom", // 取消默认的原生导航栏
 				"app-plus":{
 					"titleNView":false // 去掉页面的导航栏
 				}
@@ -50,6 +64,63 @@
             
         }
     ],
+	"subPackages": [{
+		"root":"pages/subpages/index",
+		"pages": [
+			{
+				"path":"album",
+				"style": {
+					"navigationBarTitleText":"歌单",
+					"app-plus":{
+						"titleNView": false
+					}
+				}
+			},
+			{
+				"path":"searchList",
+				"style":{
+					"navigationBarTitleText":"搜索结果",
+					"navigationStyle":"custom",
+					"app-plus": {
+						"titleNView": false
+					}
+				}
+			},
+			{
+				"path":"rank",
+				"style":{
+					"navigationBarTitleText":"排行榜",
+					"navigationStyle":"custom",
+					"app-plus": {
+						"titleNView": false
+					}
+				}
+			},
+			{
+				"path":"play",
+				"style":{
+					"navigationBarTitleText":"播放",
+					"navigationStyle":"custom",
+					"app-plus": {
+						"titleNView": false
+					}
+				}
+			}
+		]
+	},
+	{
+		"root":"pages/subpages/account",
+		"pages": [{
+			"path":"account",
+			"style": {
+				"navigationBarTitleText":"登录",
+				"app-plus": {
+					"titleNView": false
+				}
+				
+			}
+		}]
+	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black", // 导航栏标题颜色及状态栏前景颜色，仅支持black和white
 		"navigationBarTitleText": "网易云", // 导航栏标题文字内容

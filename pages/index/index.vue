@@ -1,91 +1,116 @@
 <template>
 	<view>
-		<!-- 轮播图 -->
-		<view class="banner">
-			<swiper
-			  class="swiper"
-			  :autoplay="true"
-			  :indicator-dots="true"
-			  indicator-active-color="#ff372b"
-			  indicator-color="rgba(255,255,255, .5)"
-			  duration="500"
-			  :circular="true">
-				<swiper-item v-for="(item,index) in swiper" :key="index">
-					<view class="item">
-						<image :src="item.imageUrl + $imgSuffix" class="img" style="width: 100%;"></image>
-						<view class="tag">{{item.typeTitle}}</view>
+		<!-- 搜索 -->
+		<view class="search-bar" :class="{dpn: isShowSearch}">
+			<uni-nav-bar fixed :statu-bar="true" @clickLeft="goCloud" @clickRight="goCloud">
+				<block slot="left">
+					<image class="top-img" src="../../static/image/search/6.png"></image>
+				</block>
+				<view class="top-search flex-box" @click="openSearch">
+					<image class="search-icon" src="../../static/image/search/2.png"></image>
+					<span >{{ searchTxt }}</span>
+				</view>
+				<!-- #ifdef APP-PLUS || H5 -->
+				<block slot="right">
+					<image class="top-img" src="../../static/image/mine/r.png"></image>
+				</block>
+				<!-- #endif -->
+			</uni-nav-bar>
+		<!-- <search ref="search" @close="closeSearch"></search> -->
+			<view class="page-content">
+				<mescroll-uni ref="mescroll" :fixed="false" :down="downOption" :up="upOption" @down="downCallback" @up="upCallback">
+					<!-- 轮播图 -->
+					<view class="banner">
+						<swiper
+						  class="swiper"
+						  :autoplay="true"
+						  :indicator-dots="true"
+						  indicator-active-color="#ff372b"
+						  indicator-color="rgba(255,255,255, .5)"
+						  duration="500"
+						  :circular="true">
+							<swiper-item v-for="(item,index) in swiper" :key="index">
+								<view class="item">
+									<image :src="item.imageUrl + $imgSuffix" class="img" style="width: 100%;"></image>
+									<view class="tag">{{item.typeTitle}}</view>
+								</view>
+							</swiper-item>
+						</swiper>
 					</view>
-				</swiper-item>
-			</swiper>
-		</view>
-		<!-- 主入口 -->
-		<view class="main-bar flex-box">
-			<view class="flex-item" v-for="(item, index) in contentBar" :key="index">
-				<image :src="`/static/image/index/t_${index + 1}.png`" class="img"></image>
-				<view>{{item.name}}</view>
-				<view v-if="index == 0" class="date">{{curDate}}</view>
+					<!-- 主入口 -->
+					<view class="main-bar flex-box">
+						<view class="flex-item" v-for="(item, index) in contentBar" :key="index">
+							<image :src="`/static/image/index/t_${index + 1}.png`" class="img"></image>
+							<view>{{item.name}}</view>
+							<view v-if="index == 0" class="date">{{curDate}}</view>
+						</view>
+					</view>
+					<!-- 歌单分类 -->
+					<!-- <songList title="推荐歌单1" link="/pages/songSquare/index?limit=30" :list="recommendSongs"></songList> -->
+					<!-- 歌单分类 -->
+					<view class="song-list">
+						<view class="title-bar">
+							推荐歌单
+							<view class="more fr">歌单广场</view>
+						</view>
+						<scroll-view class="scroll-view" scroll-x="true">
+							<navigator class="item" v-for="(item, index) in recommendSongs" :key="index" hover-class="none" :url="'/pages/subpages/index/album?item='+ encodeURIComponent(JSON.stringify(item))">
+								<image class="img" :src="item.picUrl + $imgSuffix"></image>
+								<view class="desc ellipsis">{{item.name}}</view>
+								<view class="count"> {{ item.playCount}}</view>
+							</navigator>
+						</scroll-view>
+					</view>
+					<!-- 新歌新碟 -->
+					<view class="song-list">
+						<view class="switch-line flex-box">
+							<view class="flex-box">
+								<view class="switch-item" :class="{on: newType == 1}" @click="switchTab(1)">新碟</view>
+								<view class="switch-item" :class="{on: newType == 2}" @click="switchTab(2)">>新歌</view>
+							</view>
+							<template v-if="newType == 1">
+								<view class="more">更多新碟</view>
+							</template>
+							<template v-if="newType == 2">
+								<view class="more">新歌推荐</view>
+							</template>
+						</view>
+						<scroll-view class="scroll-view" scroll-x="true">
+							<view class="item" v-for="(item, index) in latesAlbum" :key="index">
+								<image class="img" :src="item.picUrl + $imgSuffix"></image>
+								<view class="desc ellipsis">{{item.name}}</view>
+								<view class="desc ellipsis c9">{{item.artist.name}}</view>
+							</view>
+						</scroll-view>
+					</view>
+					<!-- 精选视频 -->
+					<view class="video-list song-list">
+						<view class="title-bar">
+							精选视频
+							<view class="more fr">更多></view>
+						</view>
+						<view class="video-item" v-for="(item, index) in relatedVideo" :key="index">
+							<image class="img" :src="item.coverUrl+$imgSuffix"></image>
+							<view class="desc ellipsis">{{item.title}}</view>
+						</view>
+					</view>
+				</mescroll-uni>
 			</view>
 		</view>
-		<!-- 歌单分类 -->
-		<songList
-			title="推荐歌单1"
-			link="/pages/songSquare/index?limit=30"
-			:list="recommendSongs"></songList>
-		<!-- 歌单分类 -->
-		<view class="song-list">
-			<view class="title-bar">
-				推荐歌单2
-				<view class="more fr">歌单广场</view>
-			</view>
-			<scroll-view class="scroll-view" scroll-x="true">
-				<view class="item" v-for="(item, index) in recommendSongs" :key="index">
-					<image class="img" :src="item.picUrl + $imgSuffix"></image>
-					<view class="desc ellipsis">{{item.name}}</view>
-					<view class="count"> {{ item.playCount}}</view>
-				</view>
-			</scroll-view>
-		</view>
-		<!-- 新歌新碟 -->
-		<view class="song-list">
-			<view class="switch-line flex-box">
-				<view class="flex-box">
-					<view class="switch-item" :class="{on: newType == 1}" @click="switchTab(1)">新碟</view>
-					<view class="switch-item" :class="{on: newType == 2}" @click="switchTab(2)">>新歌</view>
-				</view>
-				<template v-if="newType == 1">
-					<view class="more">更多新碟</view>
-				</template>
-				<template v-if="newType == 2">
-					<view class="more">新歌推荐</view>
-				</template>
-			</view>
-			<scroll-view class="scroll-view" scroll-x="true">
-				<view class="item" v-for="(item, index) in latesAlbum" :key="index">
-					<image class="img" :src="item.picUrl + $imgSuffix"></image>
-					<view class="desc ellipsis">{{item.name}}</view>
-					<view class="desc ellipsis c9">{{item.artist.name}}</view>
-				</view>
-			</scroll-view>
-		</view>
-		<!-- 精选视频 -->
-		<view class="video-list song-list">
-			<view class="title-bar">
-				精选视频
-				<view class="more fr">更多></view>
-			</view>
-			<view class="video-item" v-for="(item, index) in relatedVideo" :key="index">
-				<image class="img" style="width: 100%;" :src="item.coverUrl+$imgSuffix"></image>
-				<view class="desc ellipsis">{{item.title}}</view>
-			</view>
-		</view>
+		<search ref="search" @close="closeSearch"></search>
 	</view>
 </template>
 
 <script>
+	import { apiGetBanner } from '../../utils/request/index.js';
 	import songList from '../../components/songList.vue';
+	import UniNavBar from '../../components/uni-nav-bar/uni-nav-bar.vue';
+	import search from '../../components/search.vue';
 	export default {
 		components:{
-			songList
+			songList,
+			UniNavBar,
+			search
 		},
 		data() {
 			return {
@@ -113,7 +138,20 @@
 				newType: 1,
 				latesAlbum: [],
 				latestTempAlbum: [],
-				relatedVideo: []
+				relatedVideo: [],
+				isShowSearch: false,
+				searchTxt: '我和我的祖国',
+				mescrollTop: 0,
+				downOption: {
+					auto: false // 是否在初始化后，自动执行下拉回调callback； 默认true
+				},
+				upOption: {
+					auto: false, // 是否在初始化后，自动执行下拉回调callback； 默认true
+					page: {
+						num: 1,
+						size:10
+					}
+				},
 			}
 		},
 		onLoad() {
@@ -123,10 +161,28 @@
 			this.getRelatedVideo();
 		},
 		methods: {
+			// goCloud
+			goCloud() {
+			},
+			downCallback() {},
+			upCallback() {},
+			
+			// 打开搜索
+			openSearch() {
+				this.$refs.search.open();
+				this.isShowSearch = true;
+			},
+			// 关闭搜索
+			closeSearch() {
+				this.isShowSearch = false;
+			},
 			// 获取轮播图
 			getBanner() {
 				// 正在加载状态
 				this.loading = true;
+				// apiGetBanner().then(res => {
+				// 	this.swiper = res.banners;
+				// });
 				uni.request({
 					method:'GET',
 					url: 'http://localhost:3000/banner',
@@ -219,6 +275,28 @@
 </script>
 
 <style lang="scss">
+.search-bar{
+	.top-search{
+			background: #f7f7f7;
+			border-radius: 26px;
+			width: 100%;
+			height: 60rpx;
+			line-height: 60rpx;
+			text-align: center;
+		.search-icon{
+			width: 32rpx;
+			height: 32rpx;
+			left: 28%;
+			top: 8px;
+		}
+		span{
+			flex: 1;
+			text-align: center;
+			font-size: 28rpx;
+			color: #949595;
+		}
+	}
+}
 .main-bar {
 	padding:22rpx 0;
 	text-align:center;
@@ -323,7 +401,7 @@
 		
 		.img {
 			display: block;
-			width: 100%;
+			width: 686rpx;
 			height: 390rpx;
 			background: #eee;
 		}
@@ -342,7 +420,6 @@
 		border-radius: 10rpx;
 		overflow: hidden;
 		margin-bottom: 24rpx;
-		margin-right: 32rpx;
 	}
 }
 </style>
